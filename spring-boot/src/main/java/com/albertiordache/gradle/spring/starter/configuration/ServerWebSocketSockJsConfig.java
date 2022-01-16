@@ -1,29 +1,26 @@
 package com.albertiordache.gradle.spring.starter.configuration;
 
-import com.albertiordache.gradle.spring.starter.ServerWebSocketHandler;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 @Configuration
-@EnableWebSocket
-public class ServerWebSocketSockJsConfig implements WebSocketConfigurer {
+@EnableWebSocketMessageBroker
+// See https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#websocket-stomp
+public class ServerWebSocketSockJsConfig implements WebSocketMessageBrokerConfigurer {
+
     @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler(), "/websocket-sockjs")
-                .setAllowedOrigins("http://localhost:3000")
-                .withSockJS()
-                .setWebSocketEnabled(true)
-                .setHeartbeatTime(25000)
-                .setDisconnectDelay(5000)
-                .setClientLibraryUrl("/webjars/sockjs-client/1.1.2/sockjs.js")
-                .setSessionCookieNeeded(false);
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/websocket") // This is what the client connects to first. Once this connection is established, STOMP frames begin to flow on it.
+                .setAllowedOriginPatterns("*")
+                .withSockJS();
     }
-    @Bean
-    public WebSocketHandler webSocketHandler() {
-        return new ServerWebSocketHandler();
+
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/topic"); // Use in-memory broker, as opposed to a dedicated broker
+        config.setApplicationDestinationPrefixes("/app");
     }
 }
