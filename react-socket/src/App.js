@@ -23,7 +23,9 @@ function App() {
         client.webSocketFactory = function () {
             // Testing with just WebSocket enabled:
             // eslint-disable-next-line no-undef
-            return new SockJS('http://localhost:8080/websocket', null, {transports: ["websocket"]});
+            // return new SockJS('http://localhost:8080/websocket', null, {transports: ["websocket"]});
+            // eslint-disable-next-line no-undef
+            return new SockJS('https://websocket-test.apps.gmdcpt01.gmd.local:443/websocket', null, {transports: ["websocket"]});
 
             // Testing without WebSocket enabled:
             // eslint-disable-next-line no-undef
